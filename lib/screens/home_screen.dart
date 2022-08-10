@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
+import 'categories_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -32,6 +34,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         '/home/sire/Képek/Képek magamról/KurjákRichárdCV.jpg'))
                     .image),
           ),
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return const HomeScreen();
+              }));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.view_list),
+            title: const Text('Categories'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return const CategoriesScreen();
+              }));
+            },
+          )
         ],
       ),
     );
