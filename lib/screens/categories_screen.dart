@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/category.dart';
-import '../service/category_service.dart';
+import '../utils/category_service.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({Key? key}) : super(key: key);
@@ -13,8 +13,8 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  Category _category = Category();
-  CategoryService _categoryService = CategoryService();
+  final Category _category = Category('', '');
+  final CategoryService _categoryService = CategoryService();
 
   @override
   Widget build(BuildContext context) {

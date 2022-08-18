@@ -29,9 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
             accountName: const Text('Kurják Richárd'),
             accountEmail: const Text('kurjak.richard@gmail.com'),
             currentAccountPicture: CircleAvatar(
-                backgroundImage: Image.file(File(
-                        '/home/sire/Képek/Képek magamról/KurjákRichárdCV.jpg'))
-                    .image),
+                backgroundImage: Image.asset('assets/images/cv.jpg').image),
           ),
           ListTile(
             leading: const Icon(Icons.home),
