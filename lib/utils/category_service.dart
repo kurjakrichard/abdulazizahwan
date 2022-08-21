@@ -9,9 +9,13 @@ class CategoryService {
     _db = DatabaseHelper();
   }
 
-  Future<int> saveCategory(Category category) async {
+  Future<List<Category>> readCategories(String table, String order) async {
+    return await _db!.getCategoryList(table, order);
+  }
+
+  Future<int> insertCategory(String table, Category category) async {
     debugPrint('Category: ${category.name}');
     debugPrint('Description: ${category.description}');
-    return await _db!.insertCategory(category);
+    return await _db!.insert(table, category.toMap());
   }
 }

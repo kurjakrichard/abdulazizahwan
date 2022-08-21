@@ -37,28 +37,28 @@ class DatabaseHelper {
   void _createDb(Database db, int newVersion) async {
     //await db.execute('DROP TABLE IF EXIST ${table['tableName']}');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS ${table['tableName']} (${table['colId']} INTEGER PRIMARY KEY AUTOINCREMENT,'
+        'CREATE TABLE ${table['tableName']} (${table['colId']} INTEGER PRIMARY KEY AUTOINCREMENT,'
         '${table['colName']} TEXT, ${table['colDescription']} TEXT)');
   }
 
   // Fetch Operation: Get all data from database
-  Future<List<Map<String, dynamic>>> getCategoryMapList() async {
+  Future<List<Map<String, dynamic>>> getCategoryMapList(
+      String table, String order) async {
     Database db = await database;
     //var result = await db.rawQuery('SELECT * FROM ${table['tablename']} order by ${table['colPriority']} ASC');
-    var result =
-        await db.query(table['tableName'], orderBy: table['colDescription']);
+    var result = await db.query(table, orderBy: order);
     return result;
   }
 
   // Insert Operation: Insert new record to database
-  Future<int> insertCategory(Category category) async {
+  Future<int> insert(String table, Map<String, dynamic> category) async {
     Database db = await database;
-    var result = await db.insert(table['tableName'], category.toMap());
+    var result = await db.insert(table, category);
     return result;
   }
 
   // Update Operation: Update record in the database
-  Future<int> updateCategory(Category category) async {
+  Future<int> update(Category category) async {
     var db = await database;
     var result = await db.update(table['tableName'], category.toMap(),
         where: '${table['colId']} = ?', whereArgs: [category.id]);
@@ -66,7 +66,7 @@ class DatabaseHelper {
   }
 
   // Delete Operation: Delete record from database
-  Future<int> deleteCategory(int id) async {
+  Future<int> delete(int id) async {
     var db = await database;
     int result =
         await db.delete(table['tableName'], where: 'id = ?', whereArgs: [id]);
@@ -83,8 +83,9 @@ class DatabaseHelper {
   }
 
   // Get the MapList and convert it to NoteList
-  Future<List<Category>> getCategoryList() async {
-    List<Map<String, dynamic>> categoryMapList = await getCategoryMapList();
+  Future<List<Category>> getCategoryList(String table, String order) async {
+    List<Map<String, dynamic>> categoryMapList =
+        await getCategoryMapList(table, order);
     int count = categoryMapList.length;
     List<Category> categoryList = <Category>[];
     for (int i = 0; i < count; i++) {

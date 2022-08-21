@@ -41,10 +41,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           return AlertDialog(
             actions: [
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   _category.name = _categoryController.text;
                   _category.description = _descriptionController.text;
-                  _categoryService.saveCategory(_category);
+                  int result = await _categoryService.insertCategory(
+                      'categories', _category);
+                  debugPrint(result.toString());
                 },
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.resolveWith(
