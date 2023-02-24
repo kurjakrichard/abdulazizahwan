@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../models/category.dart';
 import '../utils/category_service.dart';
 
@@ -11,10 +10,17 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  final TextEditingController _categoryController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final Category _category = Category('', '');
+  TextEditingController _categoryController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
+  Category _category = Category('', '');
   final CategoryService _categoryService = CategoryService();
+  List<Category>? _categoryList;
+
+  @override
+  void initState() {
+    super.initState();
+    getCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,19 +28,66 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       appBar: AppBar(
         title: const Text('Categories'),
       ),
-      body: const Center(
-        child: Text('Welcome to categories screen'),
-      ),
+      body: ListView.builder(
+          itemCount: _categoryList?.length,
+          itemBuilder: ((context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 4.0, left: 8.0, right: 8.0),
+              child: Card(
+                elevation: 8.0,
+                child: ListTile(
+                  leading: IconButton(
+                      onPressed: () async {
+                        _showFormDialog(
+                            context, 'Edit category', _categoryList![index].id);
+                      },
+                      icon: const Icon(Icons.edit)),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(_categoryList?.length != null
+                          ? _categoryList![index].name
+                          : ''),
+                      IconButton(
+                          icon: const Icon(Icons.delete),
+                          color: Colors.red,
+                          onPressed: () {})
+                    ],
+                  ),
+                  subtitle: Text(_categoryList?.length != null
+                      ? _categoryList![index].description
+                      : ''),
+                ),
+              ),
+            );
+          })),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {
-          _showFormDialog(context);
+        onPressed: () async {
+          _showFormDialog(context, 'New category', _category);
+          getCategories();
         },
       ),
     );
   }
 
-  Future _showFormDialog(BuildContext context) {
+  void getCategories() async {
+    _categoryList = await _categoryService.readCategories('categories', 'name');
+
+    setState(() {
+      _categoryList;
+    });
+  }
+
+  // ignore: unused_element
+  Future<void> _editCategories(
+      BuildContext context, String table, Category category) async {
+    await _categoryService.readCategoriesById(table, category);
+    setState(() {});
+  }
+
+  Future _showFormDialog(
+      BuildContext context, String title, Category category) {
     return showDialog(
         context: context,
         builder: (value) {
@@ -42,11 +95,22 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             actions: [
               TextButton(
                 onPressed: () async {
-                  _category.name = _categoryController.text;
-                  _category.description = _descriptionController.text;
-                  int result = await _categoryService.insertCategory(
-                      'categories', _category);
-                  debugPrint(result.toString());
+                  category.name = _categoryController.text;
+                  category.description = _descriptionController.text;
+                  if (_category.name != '') {
+                    // ignore: unused_local_variable
+                    int result = await _categoryService.addCategory(
+                        'categories', _category);
+                    setState(() {
+                      getCategories();
+                    });
+                    _categoryController = TextEditingController();
+                    _descriptionController = TextEditingController();
+                    _category = Category('', '');
+                  }
+
+                  // ignore: use_build_context_synchronously
+                  Navigator.pop(context);
                 },
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.resolveWith(
@@ -67,7 +131,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 ),
               ),
             ],
-            title: const Text('Categories Form'),
+            title: Text(title),
             content: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
